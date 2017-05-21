@@ -1,0 +1,52 @@
+pkgname=filesystem
+pkgver=8.0
+pkgrel=1
+pkgdesc='Base FS Linux files while using (B)LFS 8.0'
+arch=('x86_64')
+license=('GPL')
+url='https://architecht.tk'
+groups=('base')
+install='filesystem.install'
+source=('passwd', 'group',)
+zource=('group' 'issue' 'nsswitch.conf' 'securetty' 'host.conf' 'ld.so.conf'
+        'passwd' 'shadow' 'fstab' 'crypttab' 'hosts' 'motd' 'os-release' 'resolv.conf'
+        'shells' 'gshadow' 'profile' 'archlinux.7.txt' 'locale.sh')
+
+
+package() {
+    cd "$pkgdir"
+
+    #########################################
+    # root filesystem as on LFS chapter 6.5 #
+    #########################################
+
+    install -dm755 {bin,boot,etc/{opt,sysconfig},home,lib/firmware,mnt,opt}
+    install -dm755 {media/{floppy,cdrom},sbin,srv,var}
+    install -dm 0750 root
+    install -dv -m 1777 tmp var/tmp
+    install -dm755 usr/{,local/}{bin,include,lib,sbin,src}
+    install -dm755 usr/{,local/}share/{color,dict,doc,info,locale,man}
+    install -dm755 usr/{,local/}share/{misc,terminfo,zoneinfo}
+    install -dm755 usr/libexec lib64
+    install -dm755 var/{log,mail,spool}
+    ln -s ../run var/run
+    ln -s ../run/lock var/lock
+    install -dm755 var/{opt,cache,lib/{color,misc,locate},local}
+    install -dm755 {dev,proc,sys,run}
+
+
+    ##################################################
+    # Essential Files and symlinks as on chapter 6.6 #
+    ##################################################
+
+    ln -s ../proc/self/mounts etc/mtab
+
+    # login, agetty, nit need this
+    touch var/log/{btmp,lastlog,faillog,wtmp}
+    chmod 664  var/log/lastlog
+    chmod 600  var/log/btmp
+    chgrp 13 var/log/lastlog
+    
+
+	
+}
